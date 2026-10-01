@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Player POV — U of S Women's Soccer</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green-dark:#1a3a2a; --green-mid:#2d6a4f; --green-light:#52b788;
+      --chalk:#f8f9f7; --white:#ffffff; --grey-light:#f0f2f0;
+      --grey-mid:#9aa89e; --grey-text:#4a5c52;
+      --radius-lg:20px; --radius-md:12px; --radius-sm:8px;
+      --shadow:0 4px 24px rgba(0,0,0,0.10);
+    }
+    body { font-family:'Inter',system-ui,sans-serif; background:var(--chalk); color:var(--green-dark); min-height:100vh; }
+
+    /* HERO */
+    .hero { background:linear-gradient(135deg,#1a3a2a 0%,#2d6a4f 50%,#52b788 100%); padding:3rem 2rem 2rem; text-align:center; }
+    .hero h1 { font-size:clamp(2.2rem,6vw,3.5rem); font-weight:800; color:white; margin-bottom:1.5rem; letter-spacing:-0.02em; }
+    .hero-buttons { display:flex; gap:.75rem; justify-content:center; margin-bottom:2rem; flex-wrap:wrap; }
+    .btn-hero-primary { background:white; color:var(--green-dark); border:none; padding:.65rem 1.5rem; border-radius:100px; font-weight:600; font-size:.9rem; cursor:pointer; }
+    .btn-hero-primary:hover { opacity:.85; }
+    .btn-hero-secondary { background:transparent; color:white; border:1.5px solid rgba(255,255,255,.6); padding:.65rem 1.5rem; border-radius:100px; font-weight:500; font-size:.9rem; cursor:pointer; }
+    .btn-hero-secondary:hover { background:rgba(255,255,255,.1); }
+    .hero-image { width:100%; max-width:680px; margin:0 auto; border-radius:var(--radius-lg); overflow:hidden; aspect-ratio:16/9; background:rgba(255,255,255,.15); display:flex; align-items:center; justify-content:center; }
+    .hero-image img { width:100%; height:100%; object-fit:cover; display:block; }
+    .hero-image-placeholder { color:rgba(255,255,255,.5); font-size:.85rem; text-align:center; padding:2rem; }
+
+    /* SECTIONS */
+    section { max-width:780px; margin:0 auto; padding:3rem 1.5rem; border-bottom:1px dashed #cdd8d2; }
+    section:last-of-type { border-bottom:none; }
+    .section-eyebrow { font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:var(--green-light); font-weight:600; margin-bottom:.4rem; }
+    section h2 { font-size:1.8rem; font-weight:800; margin-bottom:.5rem; letter-spacing:-0.02em; }
+    section p.section-sub { color:var(--grey-mid); font-size:.95rem; margin-bottom:1.75rem; }
+
+    /* COLLAPSIBLE */
+    .collapsible-header { display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none; margin-bottom:.5rem; }
+    .collapsible-header h2 { margin-bottom:0; }
+    .toggle-btn { background:var(--grey-light); border:1.5px solid #d0dbd5; border-radius:100px; padding:.35rem 1rem; font-size:.78rem; font-weight:600; color:var(--grey-text); cursor:pointer; white-space:nowrap; transition:background .15s; }
+    .toggle-btn:hover { background:#e0e8e3; }
+    .collapsible-body { display:none; }
+    .collapsible-body.open { display:block; }
+
+    /* UPLOAD ZONES */
+    .upload-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem; }
+    .drop-zone { background:var(--grey-light); border:2px dashed #c5d0ca; border-radius:var(--radius-md); padding:2.5rem 1rem; text-align:center; cursor:pointer; transition:border-color .15s,background .15s; }
+    .drop-zone:hover,.drop-zone.dragover { border-color:var(--green-light); background:#eaf5ef; }
+    .drop-zone.has-file { border-color:var(--green-mid); background:#eaf5ef; }
+    .drop-icon { font-size:2rem; margin-bottom:.75rem; display:block; }
+    .drop-title { font-weight:600; font-size:.9rem; color:var(--green-dark); margin-bottom:.25rem; }
+    .drop-hint { font-size:.75rem; color:var(--grey-mid); }
+    .drop-filename { margin-top:.5rem; font-size:.75rem; color:var(--green-mid); font-weight:500; word-break:break-all; }
+    input[type=file] { display:none; }
+
+    /* MULTI-FILE DROP ZONE */
+    .drop-zone-multi { background:var(--grey-light); border:2px dashed #c5d0ca; border-radius:var(--radius-md); padding:2rem 1rem; text-align:center; cursor:pointer; transition:border-color .15s,background .15s; margin-bottom:1rem; }
+    .drop-zone-multi:hover,.drop-zone-multi.dragover { border-color:var(--green-light); background:#eaf5ef; }
+    .drop-zone-multi.has-files { border-color:var(--green-mid); background:#eaf5ef; }
+    .file-list { margin-top:.75rem; text-align:left; }
+    .file-list-item { font-size:.75rem; color:var(--green-mid); padding:.2rem 0; border-bottom:1px solid #d8e5dd; display:flex; justify-content:space-between; align-items:center; }
+    .file-list-item:last-child { border-bottom:none; }
+    .file-order { font-size:.65rem; color:var(--grey-mid); background:white; border-radius:4px; padding:.1rem .35rem; }
+
+    /* FIELD & BUTTONS */
+    .field { margin-bottom:1.25rem; }
+    .field label { display:block; font-size:.8rem; font-weight:600; color:var(--grey-text); margin-bottom:.4rem; }
+    .field input[type=text] { width:100%; padding:.65rem 1rem; border:1.5px solid #d0dbd5; border-radius:var(--radius-sm); font-size:.9rem; font-family:inherit; background:white; color:var(--green-dark); outline:none; transition:border-color .15s; }
+    .field input[type=text]:focus { border-color:var(--green-mid); }
+    .btn-main { background:var(--green-dark); color:white; border:none; padding:.85rem 2rem; border-radius:100px; font-size:.95rem; font-weight:700; cursor:pointer; transition:background .15s,opacity .15s; display:inline-block; margin-bottom:1.5rem; }
+    .btn-main:hover:not(:disabled) { background:var(--green-mid); }
+    .btn-main:disabled { opacity:.4; cursor:not-allowed; }
+
+    /* PROGRESS */
+    .progress-wrap { background:white; border-radius:var(--radius-md); padding:1.5rem; box-shadow:var(--shadow); }
+    .progress-header { display:flex; justify-content:space-between; font-size:.85rem; color:var(--grey-text); margin-bottom:.75rem; font-weight:500; }
+    .progress-track { background:var(--grey-light); border-radius:100px; height:8px; overflow:hidden; margin-bottom:.75rem; }
+    .progress-fill { height:100%; background:linear-gradient(90deg,var(--green-mid),var(--green-light)); border-radius:100px; width:0%; transition:width .5s ease; }
+    .progress-step-text { font-size:.78rem; color:var(--grey-mid); }
+
+    /* RESULTS */
+    .results-wrap { background:white; border-radius:var(--radius-md); padding:1.5rem; box-shadow:var(--shadow); }
+    .results-meta { font-size:.85rem; color:var(--grey-text); margin-bottom:1.25rem; }
+    .results-meta strong { color:var(--green-dark); }
+    .download-row { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin-bottom:1rem; }
+    .download-row.single { grid-template-columns:1fr; }
+    .btn-download { display:flex; flex-direction:column; align-items:center; gap:.3rem; padding:1.1rem; background:var(--grey-light); border:1.5px solid #d0dbd5; border-radius:var(--radius-md); color:var(--green-dark); text-decoration:none; font-size:.82rem; font-weight:600; transition:background .15s,border-color .15s; }
+    .btn-download:hover { background:#eaf5ef; border-color:var(--green-mid); }
+    .btn-download .dl-icon { font-size:1.5rem; }
+    .btn-download .dl-sub { font-size:.7rem; color:var(--grey-mid); font-weight:400; }
+    .btn-reset { width:100%; padding:.65rem; background:transparent; border:1.5px solid #d0dbd5; border-radius:var(--radius-sm); color:var(--grey-mid); cursor:pointer; font-size:.85rem; font-family:inherit; transition:border-color .15s,color .15s; }
+    .btn-reset:hover { border-color:var(--green-dark); color:var(--green-dark); }
+
+    /* ERROR */
+    .error-box { background:#fff0ed; border:1.5px solid #e07a5f; border-radius:var(--radius-sm); padding:.9rem 1rem; font-size:.85rem; color:#b94a2c; display:none; margin-bottom:1rem; }
+
+    /* SUCCESS BADGE */
+    .success-badge { display:inline-flex; align-items:center; gap:.4rem; background:#eaf5ef; border:1.5px solid var(--green-light); border-radius:100px; padding:.35rem .9rem; font-size:.78rem; font-weight:600; color:var(--green-mid); margin-bottom:1rem; }
+
+    /* TEAM */
+    .description-text { font-size:.95rem; line-height:1.7; color:var(--grey-text); margin-bottom:2rem; }
+    .team-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .team-card { background:white; border-radius:var(--radius-md); padding:1.25rem; box-shadow:var(--shadow); }
+    .team-card-header { display:flex; align-items:center; gap:.75rem; }
+    .team-avatar { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+    .avatar-green { background:#eaf5ef; } .avatar-purple { background:#f0eef8; }
+    .team-name { font-weight:700; font-size:.95rem; }
+    .team-role { font-size:.78rem; color:var(--grey-mid); }
+
+    footer { text-align:center; padding:1.5rem; font-size:.75rem; color:var(--grey-mid); border-top:1px solid #dde6e1; }
+
+    @media(max-width:540px) { .upload-grid,.download-row,.team-grid { grid-template-columns:1fr; } .hero-buttons { flex-direction:column; align-items:center; } }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>Sports Engineering</h1>
+  <div class="hero-buttons">
+    <button class="btn-hero-primary" onclick="document.getElementById('stitch').scrollIntoView({behavior:'smooth'})">Get Started</button>
+    <button class="btn-hero-secondary" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">About the Project</button>
+  </div>
+  <div class="hero-image">
+    <img src="/static/team_photo.png" alt="U of S Women's Soccer">
+  </div>
+</div>
+
+<!-- STEP 1: STITCH (collapsible) -->
+<section id="stitch">
+  <div class="collapsible-header" onclick="toggleStitch()">
+    <div>
+      <p class="section-eyebrow">Step 1 — Optional</p>
+      <h2>Stitch POV Segments</h2>
+    </div>
+    <button class="toggle-btn" id="stitch-toggle-btn">Show ▾</button>
+  </div>
+  <p class="section-sub">If your POV glasses recorded in 10-minute segments, combine them here first before syncing.</p>
+
+  <div class="collapsible-body" id="stitch-body">
+
+    <div id="stitch-upload">
+      <div class="drop-zone-multi" id="stitch-zone" onclick="document.getElementById('stitch-files').click()">
+        <span class="drop-icon">🎞️</span>
+        <div class="drop-title">POV Segments</div>
+        <div class="drop-hint">Click or drag to upload all segments — they will be joined in filename order</div>
+        <div class="file-list" id="stitch-file-list"></div>
+      </div>
+      <input type="file" id="stitch-files" accept="video/*,.mov,.hevc,.mp4,.MOV" multiple>
+
+      <div class="field">
+        <label for="stitch-name">Output file name</label>
+        <input type="text" id="stitch-name" placeholder="e.g. pov_full_session" value="pov_stitched" />
+      </div>
+
+      <div class="error-box" id="stitch-error"></div>
+      <button class="btn-main" id="stitch-btn" disabled onclick="startStitch()">Combine Segments</button>
+    </div>
+
+    <div id="stitch-progress" style="display:none">
+      <div class="progress-wrap">
+        <div class="progress-header">
+          <span id="stitch-step">Processing…</span>
+          <span id="stitch-pct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="stitch-fill"></div>
+        </div>
+        <p class="progress-step-text" id="stitch-detail">Starting…</p>
+      </div>
+    </div>
+
+    <div id="stitch-result" style="display:none">
+      <div class="results-wrap">
+        <div class="success-badge">✅ Segments combined successfully</div>
+        <p class="results-meta">Your stitched POV video is ready. Download it and use it in Step 2 below.</p>
+        <div class="download-row single">
+          <a class="btn-download" id="stitch-dl" href="#" download>
+            <span class="dl-icon">⬇️</span>
+            <span>Download Stitched POV Video</span>
+            <span class="dl-sub">Use this in Step 2</span>
+          </a>
+        </div>
+        <button class="btn-reset" onclick="resetStitch()">Stitch another set</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- STEP 2: SYNC -->
+<section id="tool">
+  <p class="section-eyebrow">Step 2</p>
+  <h2>File Converter &amp; Sync</h2>
+  <p class="section-sub">Upload the sport camera video and the POV glasses video — Player POV handles the rest automatically.</p>
+
+  <div id="upload-section">
+    <button class="btn-main" id="submit-btn" disabled onclick="startJob()">Convert &amp; Sync Videos</button>
+    <div class="upload-grid">
+      <div class="drop-zone" id="zone1" onclick="document.getElementById('file1').click()">
+        <span class="drop-icon">🏟️</span>
+        <div class="drop-title">Sport Camera Video</div>
+        <div class="drop-hint">Please drop the sport video</div>
+        <div class="drop-filename" id="name1"></div>
+      </div>
+      <input type="file" id="file1" accept="video/*,.mov,.hevc,.mp4,.MOV">
+      <div class="drop-zone" id="zone2" onclick="document.getElementById('file2').click()">
+        <span class="drop-icon">🥽</span>
+        <div class="drop-title">POV Glasses Video</div>
+        <div class="drop-hint">Please drop the POV video</div>
+        <div class="drop-filename" id="name2"></div>
+      </div>
+      <input type="file" id="file2" accept="video/*,.mov,.hevc,.mp4,.MOV">
+    </div>
+    <div class="field">
+      <label for="session-name">Session name</label>
+      <input type="text" id="session-name" placeholder="e.g. practice_june26" value="session" />
+    </div>
+    <div class="error-box" id="error-box"></div>
+  </div>
+
+  <div id="progress-section" style="display:none">
+    <div class="progress-wrap">
+      <div class="progress-header">
+        <span id="progress-step">Processing…</span>
+        <span id="progress-pct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <p class="progress-step-text" id="progress-detail">Starting pipeline…</p>
+    </div>
+  </div>
+
+  <div id="results-section" style="display:none">
+    <div class="results-wrap">
+      <p class="results-meta">Sync complete — offset detected: <strong id="offset-display">—</strong></p>
+      <div class="download-row">
+        <a class="btn-download" id="dl1" href="#" download>
+          <span class="dl-icon">⬇️</span>
+          <span>Synced Video</span>
+          <span class="dl-sub">Sport camera audio</span>
+        </a>
+        <a class="btn-download" id="dl2" href="#" download>
+          <span class="dl-icon">⬇️</span>
+          <span>Synced Video</span>
+          <span class="dl-sub">POV glasses audio</span>
+        </a>
+      </div>
+      <button class="btn-reset" onclick="resetSync()">Process another session</button>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <p class="section-eyebrow">About</p>
+  <h2>Project Description</h2>
+  <p class="description-text">
+    The intent of this project is to develop a tool for the U of S Women's Soccer Team to monitor
+    what athletes focus on during games. This tool will provide data on players' focus that can be
+    reviewed after training. It works for many players at once without hindering their abilities
+    while providing usability for both indoor and outdoor sessions.
+  </p>
+  <div class="team-grid">
+    <div class="team-card">
+      <div class="team-card-header">
+        <div class="team-avatar avatar-green">🙂</div>
+        <div>
+          <div class="team-name">Emma Paulson</div>
+          <div class="team-role">Project Founder</div>
+        </div>
+      </div>
+    </div>
+    <div class="team-card">
+      <div class="team-card-header">
+        <div class="team-avatar avatar-purple">🙂</div>
+        <div>
+          <div class="team-name">Ahren Berwald &amp; Madison Fafard</div>
+          <div class="team-role">Project Co-Heads</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>Player POV · University of Saskatchewan · Engineering Physics</footer>
+
+<script>
+  // ── STITCH ───────────────────────────────────────────────
+  let stitchJobId = null, stitchPoll = null;
+  let stitchOpen = false;
+
+  function toggleStitch() {
+    stitchOpen = !stitchOpen;
+    document.getElementById('stitch-body').classList.toggle('open', stitchOpen);
+    document.getElementById('stitch-toggle-btn').textContent = stitchOpen ? 'Hide ▴' : 'Show ▾';
+  }
+
+  const stitchInput = document.getElementById('stitch-files');
+  const stitchZone  = document.getElementById('stitch-zone');
+
+  function updateStitchFileList(files) {
+    const list = document.getElementById('stitch-file-list');
+    if (!files.length) { list.innerHTML = ''; stitchZone.classList.remove('has-files'); return; }
+    stitchZone.classList.add('has-files');
+    const sorted = Array.from(files).sort((a,b) => a.name.localeCompare(b.name));
+    list.innerHTML = sorted.map((f,i) =>
+      `<div class="file-list-item"><span>${f.name}</span><span class="file-order">Segment ${i+1}</span></div>`
+    ).join('');
+    document.getElementById('stitch-btn').disabled = files.length < 2;
+  }
+
+  stitchInput.addEventListener('change', () => updateStitchFileList(stitchInput.files));
+  stitchZone.addEventListener('dragover', e => { e.preventDefault(); stitchZone.classList.add('dragover'); });
+  stitchZone.addEventListener('dragleave', () => stitchZone.classList.remove('dragover'));
+  stitchZone.addEventListener('drop', e => {
+    e.preventDefault(); stitchZone.classList.remove('dragover');
+    const dt = new DataTransfer();
+    Array.from(e.dataTransfer.files).forEach(f => dt.items.add(f));
+    stitchInput.files = dt.files;
+    updateStitchFileList(stitchInput.files);
+  });
+
+  async function startStitch() {
+    const files = stitchInput.files;
+    const name  = document.getElementById('stitch-name').value.trim() || 'pov_stitched';
+    document.getElementById('stitch-error').style.display = 'none';
+    document.getElementById('stitch-upload').style.display = 'none';
+    document.getElementById('stitch-progress').style.display = 'block';
+    setStitchProgress('Uploading segments…', 0);
+
+    const form = new FormData();
+    Array.from(files).forEach(f => form.append('segments', f));
+    form.append('name', name);
+
+    try {
+      const res  = await fetch('/api/stitch', { method:'POST', body:form });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Upload failed');
+      stitchJobId = data.job_id;
+      stitchPoll  = setInterval(pollStitch, 1500);
+    } catch(err) {
+      document.getElementById('stitch-error').textContent = `Error: ${err.message}`;
+      document.getElementById('stitch-error').style.display = 'block';
+      document.getElementById('stitch-upload').style.display = 'block';
+      document.getElementById('stitch-progress').style.display = 'none';
+    }
+  }
+
+  async function pollStitch() {
+    try {
+      const res  = await fetch(`/api/status/${stitchJobId}`);
+      const data = await res.json();
+      setStitchProgress(data.message || '…', data.progress || 0);
+      if (data.status === 'done') {
+        clearInterval(stitchPoll);
+        const filename = data.result.output.split(/[\\/]/).pop();
+        document.getElementById('stitch-dl').href     = `/api/download/${stitchJobId}/${filename}`;
+        document.getElementById('stitch-dl').download = filename;
+        document.getElementById('stitch-progress').style.display = 'none';
+        document.getElementById('stitch-result').style.display   = 'block';
+      } else if (data.status === 'error') {
+        clearInterval(stitchPoll);
+        document.getElementById('stitch-error').textContent = `Error: ${data.error}`;
+        document.getElementById('stitch-error').style.display = 'block';
+        document.getElementById('stitch-upload').style.display = 'block';
+        document.getElementById('stitch-progress').style.display = 'none';
+      }
+    } catch(e) {}
+  }
+
+  function setStitchProgress(step, pct) {
+    document.getElementById('stitch-step').textContent   = step;
+    document.getElementById('stitch-pct').textContent    = `${pct}%`;
+    document.getElementById('stitch-fill').style.width   = `${pct}%`;
+    document.getElementById('stitch-detail').textContent = step;
+  }
+
+  function resetStitch() {
+    stitchJobId = null; clearInterval(stitchPoll);
+    stitchInput.value = '';
+    document.getElementById('stitch-file-list').innerHTML = '';
+    stitchZone.classList.remove('has-files');
+    document.getElementById('stitch-btn').disabled = true;
+    document.getElementById('stitch-result').style.display   = 'none';
+    document.getElementById('stitch-upload').style.display   = 'block';
+  }
+
+  // ── SYNC ─────────────────────────────────────────────────
+  let currentJobId = null, pollInterval = null;
+
+  function setupZone(inputId, zoneId, nameId) {
+    const input = document.getElementById(inputId);
+    const zone  = document.getElementById(zoneId);
+    const name  = document.getElementById(nameId);
+    input.addEventListener('change', () => {
+      if (input.files[0]) { name.textContent = input.files[0].name; zone.classList.add('has-file'); checkReady(); }
+    });
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault(); zone.classList.remove('dragover');
+      const dt = new DataTransfer(); dt.items.add(e.dataTransfer.files[0]); input.files = dt.files;
+      name.textContent = e.dataTransfer.files[0].name; zone.classList.add('has-file'); checkReady();
+    });
+  }
+  setupZone('file1','zone1','name1');
+  setupZone('file2','zone2','name2');
+
+  function checkReady() {
+    const f1 = document.getElementById('file1').files[0];
+    const f2 = document.getElementById('file2').files[0];
+    document.getElementById('submit-btn').disabled = !(f1 && f2);
+  }
+
+  async function startJob() {
+    const f1   = document.getElementById('file1').files[0];
+    const f2   = document.getElementById('file2').files[0];
+    const name = document.getElementById('session-name').value.trim() || 'session';
+    document.getElementById('error-box').style.display = 'none';
+    document.getElementById('upload-section').style.display   = 'none';
+    document.getElementById('progress-section').style.display = 'block';
+    setProgress('Uploading files…', 0);
+    const form = new FormData();
+    form.append('video1', f1); form.append('video2', f2); form.append('name', name);
+    try {
+      const res  = await fetch('/api/sync', { method:'POST', body:form });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Upload failed');
+      currentJobId = data.job_id;
+      pollInterval = setInterval(pollStatus, 1500);
+    } catch(err) {
+      document.getElementById('error-box').textContent = `Error: ${err.message}`;
+      document.getElementById('error-box').style.display = 'block';
+      document.getElementById('upload-section').style.display   = 'block';
+      document.getElementById('progress-section').style.display = 'none';
+    }
+  }
+
+  async function pollStatus() {
+    try {
+      const res  = await fetch(`/api/status/${currentJobId}`);
+      const data = await res.json();
+      setProgress(data.message || '…', data.progress || 0);
+      if (data.status === 'done') { clearInterval(pollInterval); showResults(data.result); }
+      else if (data.status === 'error') {
+        clearInterval(pollInterval);
+        document.getElementById('error-box').textContent = `Error: ${data.error}`;
+        document.getElementById('error-box').style.display = 'block';
+        document.getElementById('upload-section').style.display   = 'block';
+        document.getElementById('progress-section').style.display = 'none';
+      }
+    } catch(e) {}
+  }
+
+  function setProgress(step, pct) {
+    document.getElementById('progress-step').textContent   = step;
+    document.getElementById('progress-pct').textContent    = `${pct}%`;
+    document.getElementById('progress-fill').style.width   = `${pct}%`;
+    document.getElementById('progress-detail').textContent = step;
+  }
+
+  function showResults(result) {
+    document.getElementById('progress-section').style.display = 'none';
+    document.getElementById('results-section').style.display  = 'block';
+    document.getElementById('offset-display').textContent = `${result.offset} s`;
+    const out1 = result.output_audio1.split(/[\\/]/).pop();
+    const out2 = result.output_audio2.split(/[\\/]/).pop();
+    document.getElementById('dl1').href = `/api/download/${currentJobId}/${out1}`; document.getElementById('dl1').download = out1;
+    document.getElementById('dl2').href = `/api/download/${currentJobId}/${out2}`; document.getElementById('dl2').download = out2;
+  }
+
+  function resetSync() {
+    currentJobId = null; clearInterval(pollInterval);
+    ['file1','file2'].forEach(id => document.getElementById(id).value = '');
+    ['name1','name2'].forEach(id => document.getElementById(id).textContent = '');
+    ['zone1','zone2'].forEach(id => document.getElementById(id).classList.remove('has-file'));
+    document.getElementById('submit-btn').disabled = true;
+    document.getElementById('results-section').style.display  = 'none';
+    document.getElementById('upload-section').style.display   = 'block';
+    document.getElementById('error-box').style.display = 'none';
+  }
+</script>
+</body>
+</html>
